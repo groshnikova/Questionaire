@@ -40,3 +40,6 @@ Thumbs.db
 *.bak
 *.backup
 questions.json.bak
+
+# Progress tracking (user-specific, not version controlled)
+progress.json

@@ -45,6 +45,7 @@
                     Show only unanswered
                 </label>
             </div>
+            <button id="add-question-btn" class="btn btn-primary">+ Add Question</button>
             <button id="reset-btn" class="btn btn-secondary">Reset Progress</button>
         </div>
 
@@ -60,11 +61,80 @@
             <div class="practice-card">
                 <div class="practice-category" id="practice-category"></div>
                 <div class="practice-question" id="practice-question"></div>
-                <div class="practice-notes" id="practice-notes"></div>
+                <div class="practice-hint-section">
+                    <button id="show-hint-btn" class="btn btn-hint">💡 Show Hint</button>
+                    <div id="practice-hint" class="practice-hint hidden"></div>
+                </div>
                 <div class="practice-controls">
                     <button id="mark-answered-btn" class="btn btn-primary">Mark as Answered</button>
                     <button id="next-question-btn" class="btn btn-primary">Next Question</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="add-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Question</h2>
+                <button class="modal-close" onclick="closeAddModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="new-category">Category:</label>
+                    <select id="new-category">
+                        <option value="Behavioral">Behavioral</option>
+                        <option value="Technical">Technical</option>
+                        <option value="HR">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-question">Question:</label>
+                    <textarea id="new-question" rows="3" placeholder="Enter your question..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="new-hint">Hint:</label>
+                    <textarea id="new-hint" rows="3" placeholder="Enter a helpful hint..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAddModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveNewQuestion()">Add Question</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Question Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Question</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-question-id">
+                <div class="form-group">
+                    <label for="edit-category">Category:</label>
+                    <select id="edit-category">
+                        <option value="Behavioral">Behavioral</option>
+                        <option value="Technical">Technical</option>
+                        <option value="HR">HR</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-question">Question:</label>
+                    <textarea id="edit-question" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-hint">Hint:</label>
+                    <textarea id="edit-hint" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="deleteQuestion()">Delete</button>
+                <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveEditQuestion()">Save Changes</button>
             </div>
         </div>
     </div>
@@ -120,7 +190,7 @@
             container.innerHTML = '';
 
             if (filteredQuestions.length === 0) {
-                container.innerHTML = '<div class="no-questions">No questions found. Add some to questions.json!</div>';
+                container.innerHTML = '<div class="no-questions">No questions found. Click "Add Question" to create one!</div>';
                 return;
             }
 
@@ -132,23 +202,47 @@
                 card.innerHTML = `
                     <div class="question-header">
                         <span class="question-category">${q.category || 'Uncategorized'}</span>
-                        <button class="toggle-btn ${q.answered ? 'answered' : ''}" onclick="toggleAnswered(${q.id})">
-                            ${q.answered ? '✓ Answered' : '○ Not Answered'}
-                        </button>
+                        <div class="question-actions">
+                            <button class="edit-btn" onclick="openEditModal(${q.id})" title="Edit">✏️</button>
+                            <button class="toggle-btn ${q.answered ? 'answered' : ''}" onclick="toggleAnswered(${q.id})">
+                                ${q.answered ? '✓ Answered' : '○ Not Answered'}
+                            </button>
+                        </div>
                     </div>
                     <div class="question-text">${q.question}</div>
-                    ${q.notes ? `<div class="question-notes"><strong>Notes:</strong> ${q.notes}</div>` : ''}
+                    ${q.hint ? `
+                        <div class="hint-section">
+                            <button class="hint-toggle-btn" onclick="toggleHint(${q.id})">💡 Show Hint</button>
+                            <div id="hint-${q.id}" class="hint-text hidden">${q.hint}</div>
+                        </div>
+                    ` : ''}
                 `;
 
                 container.appendChild(card);
             });
 
-            // Add practice button
-            const practiceBtn = document.createElement('button');
-            practiceBtn.className = 'btn btn-primary practice-all-btn';
-            practiceBtn.textContent = 'Practice These Questions';
-            practiceBtn.onclick = startPractice;
-            container.appendChild(practiceBtn);
+            // Add practice button if there are questions
+            if (filteredQuestions.length > 0) {
+                const practiceBtn = document.createElement('button');
+                practiceBtn.className = 'btn btn-primary practice-all-btn';
+                practiceBtn.textContent = 'Practice These Questions';
+                practiceBtn.onclick = startPractice;
+                container.appendChild(practiceBtn);
+            }
+        }
+
+        // Toggle hint visibility
+        function toggleHint(questionId) {
+            const hintElement = document.getElementById(`hint-${questionId}`);
+            const button = event.target;
+
+            if (hintElement.classList.contains('hidden')) {
+                hintElement.classList.remove('hidden');
+                button.textContent = '💡 Hide Hint';
+            } else {
+                hintElement.classList.add('hidden');
+                button.textContent = '💡 Show Hint';
+            }
         }
 
         // Toggle answered status
@@ -188,6 +282,109 @@
             }
         }
 
+        // Open add question modal
+        function openAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+            document.getElementById('new-category').value = 'Behavioral';
+            document.getElementById('new-question').value = '';
+            document.getElementById('new-hint').value = '';
+        }
+
+        // Close add question modal
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        // Save new question
+        async function saveNewQuestion() {
+            const category = document.getElementById('new-category').value;
+            const question = document.getElementById('new-question').value.trim();
+            const hint = document.getElementById('new-hint').value.trim();
+
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+
+            const response = await fetch('/api/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ category, question, hint })
+            });
+
+            if (response.ok) {
+                closeAddModal();
+                await loadCategories();
+                await loadQuestions();
+                await updateStats();
+            }
+        }
+
+        // Open edit question modal
+        function openEditModal(questionId) {
+            const question = allQuestions.find(q => q.id === questionId);
+            if (!question) return;
+
+            document.getElementById('edit-question-id').value = question.id;
+            document.getElementById('edit-category').value = question.category;
+            document.getElementById('edit-question').value = question.question;
+            document.getElementById('edit-hint').value = question.hint || '';
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        // Close edit question modal
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+
+        // Save edited question
+        async function saveEditQuestion() {
+            const id = parseInt(document.getElementById('edit-question-id').value);
+            const category = document.getElementById('edit-category').value;
+            const question = document.getElementById('edit-question').value.trim();
+            const hint = document.getElementById('edit-hint').value.trim();
+
+            if (!question) {
+                alert('Please enter a question');
+                return;
+            }
+
+            const response = await fetch(`/api/questions/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ category, question, hint })
+            });
+
+            if (response.ok) {
+                closeEditModal();
+                await loadCategories();
+                await loadQuestions();
+                await updateStats();
+            }
+        }
+
+        // Delete question
+        async function deleteQuestion() {
+            if (!confirm('Are you sure you want to delete this question?')) return;
+
+            const id = parseInt(document.getElementById('edit-question-id').value);
+
+            const response = await fetch(`/api/questions/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                closeEditModal();
+                await loadCategories();
+                await loadQuestions();
+                await updateStats();
+            }
+        }
+
         // Start practice mode
         function startPractice() {
             if (filteredQuestions.length === 0) return;
@@ -215,11 +412,30 @@
                 `Question ${currentPracticeIndex + 1} of ${filteredQuestions.length}`;
             document.getElementById('practice-category').textContent = q.category || 'Uncategorized';
             document.getElementById('practice-question').textContent = q.question;
-            document.getElementById('practice-notes').textContent = q.notes ? `Notes: ${q.notes}` : '';
+
+            // Reset hint
+            const hintElement = document.getElementById('practice-hint');
+            hintElement.textContent = q.hint || 'No hint available';
+            hintElement.classList.add('hidden');
+            document.getElementById('show-hint-btn').textContent = '💡 Show Hint';
 
             const markBtn = document.getElementById('mark-answered-btn');
             markBtn.textContent = q.answered ? '✓ Answered' : 'Mark as Answered';
             markBtn.className = q.answered ? 'btn btn-success' : 'btn btn-primary';
+        }
+
+        // Toggle hint in practice mode
+        function togglePracticeHint() {
+            const hintElement = document.getElementById('practice-hint');
+            const button = document.getElementById('show-hint-btn');
+
+            if (hintElement.classList.contains('hidden')) {
+                hintElement.classList.remove('hidden');
+                button.textContent = '💡 Hide Hint';
+            } else {
+                hintElement.classList.add('hidden');
+                button.textContent = '💡 Show Hint';
+            }
         }
 
         // Mark current question as answered
@@ -251,9 +467,18 @@
         document.getElementById('category-filter').addEventListener('change', loadQuestions);
         document.getElementById('unanswered-filter').addEventListener('change', loadQuestions);
         document.getElementById('reset-btn').addEventListener('click', resetProgress);
+        document.getElementById('add-question-btn').addEventListener('click', openAddModal);
         document.getElementById('exit-practice-btn').addEventListener('click', exitPractice);
         document.getElementById('mark-answered-btn').addEventListener('click', markCurrentAnswered);
         document.getElementById('next-question-btn').addEventListener('click', nextPracticeQuestion);
+        document.getElementById('show-hint-btn').addEventListener('click', togglePracticeHint);
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.add('hidden');
+            }
+        });
 
         // Initialize on page load
         init();
