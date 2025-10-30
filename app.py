@@ -11,6 +11,7 @@ import os
 app = Flask(__name__)
 
 QUESTIONS_FILE = 'questions.json'
+PROGRESS_FILE = 'progress.json'
 
 def load_questions():
     """Load questions from JSON file"""
@@ -29,6 +30,30 @@ def save_questions(questions):
     with open(QUESTIONS_FILE, 'w') as f:
         json.dump({'questions': questions}, f, indent=2)
 
+def load_progress():
+    """Load progress from separate progress file"""
+    if not os.path.exists(PROGRESS_FILE):
+        return {}
+
+    try:
+        with open(PROGRESS_FILE, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return {}
+
+def save_progress(progress):
+    """Save progress to separate progress file"""
+    with open(PROGRESS_FILE, 'w') as f:
+        json.dump(progress, f, indent=2)
+
+def merge_questions_with_progress(questions):
+    """Merge questions with progress data"""
+    progress = load_progress()
+    for q in questions:
+        q_id = str(q.get('id'))
+        q['answered'] = progress.get(q_id, False)
+    return questions
+
 @app.route('/')
 def index():
     """Main page"""
@@ -38,6 +63,7 @@ def index():
 def get_questions():
     """Get all questions"""
     questions = load_questions()
+    questions = merge_questions_with_progress(questions)
 
     # Get filter parameters
     category = request.args.get('category')
@@ -62,20 +88,73 @@ def get_categories():
 @app.route('/api/questions/<int:question_id>/toggle', methods=['POST'])
 def toggle_answered(question_id):
     """Toggle answered status for a question"""
+    progress = load_progress()
+    q_id = str(question_id)
+
+    # Toggle the answered status in progress file
+    progress[q_id] = not progress.get(q_id, False)
+    save_progress(progress)
+
+    return jsonify({'success': True, 'answered': progress[q_id]})
+
+@app.route('/api/questions', methods=['POST'])
+def add_question():
+    """Add a new question"""
+    data = request.json
+    questions = load_questions()
+
+    # Generate new ID
+    new_id = max([q.get('id', 0) for q in questions], default=0) + 1
+
+    new_question = {
+        'id': new_id,
+        'category': data.get('category', 'Uncategorized'),
+        'question': data.get('question', ''),
+        'hint': data.get('hint', '')
+    }
+
+    questions.append(new_question)
+    save_questions(questions)
+
+    return jsonify({'success': True, 'question': new_question})
+
+@app.route('/api/questions/<int:question_id>', methods=['PUT'])
+def update_question(question_id):
+    """Update an existing question"""
+    data = request.json
     questions = load_questions()
 
     for q in questions:
         if q.get('id') == question_id:
-            q['answered'] = not q.get('answered', False)
+            q['category'] = data.get('category', q.get('category'))
+            q['question'] = data.get('question', q.get('question'))
+            q['hint'] = data.get('hint', q.get('hint', ''))
             save_questions(questions)
-            return jsonify({'success': True, 'answered': q['answered']})
+            return jsonify({'success': True, 'question': q})
 
     return jsonify({'success': False, 'error': 'Question not found'}), 404
+
+@app.route('/api/questions/<int:question_id>', methods=['DELETE'])
+def delete_question(question_id):
+    """Delete a question"""
+    questions = load_questions()
+    questions = [q for q in questions if q.get('id') != question_id]
+    save_questions(questions)
+
+    # Also remove from progress
+    progress = load_progress()
+    if str(question_id) in progress:
+        del progress[str(question_id)]
+        save_progress(progress)
+
+    return jsonify({'success': True})
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     """Get statistics"""
     questions = load_questions()
+    questions = merge_questions_with_progress(questions)
+
     total = len(questions)
     answered = sum(1 for q in questions if q.get('answered', False))
 
@@ -100,12 +179,8 @@ def get_stats():
 @app.route('/api/reset', methods=['POST'])
 def reset_progress():
     """Reset all answered flags"""
-    questions = load_questions()
-
-    for q in questions:
-        q['answered'] = False
-
-    save_questions(questions)
+    # Clear the progress file
+    save_progress({})
     return jsonify({'success': True})
 
 if __name__ == '__main__':

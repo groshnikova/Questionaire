@@ -2,17 +2,105 @@
   "questions": [
     {
       "id": 1,
-      "category": "Example",
-      "question": "What is your greatest strength?",
-      "notes": "Think about skills relevant to the position",
-      "answered": false
+      "category": "Behavioral",
+      "question": "Tell me about a time when you had to deal with a difficult coworker.",
+      "hint": "Use the STAR method: Situation, Task, Action, Result. Focus on how you maintained professionalism and resolved the conflict."
     },
     {
       "id": 2,
-      "category": "Example",
-      "question": "Describe a challenging project you worked on.",
-      "notes": "Use the STAR method (Situation, Task, Action, Result)",
-      "answered": false
+      "category": "Behavioral",
+      "question": "Describe a situation where you had to meet a tight deadline.",
+      "hint": "Highlight your time management skills, prioritization abilities, and any tools or techniques you used."
+    },
+    {
+      "id": 3,
+      "category": "Behavioral",
+      "question": "Give an example of when you showed leadership skills.",
+      "hint": "Leadership isn't just about managing people. Consider mentoring, taking initiative, or influencing a decision."
+    },
+    {
+      "id": 4,
+      "category": "Behavioral",
+      "question": "Tell me about a time you failed. What did you learn?",
+      "hint": "Be honest but focus on the learning and growth. Show self-awareness and how you applied the lesson."
+    },
+    {
+      "id": 5,
+      "category": "Behavioral",
+      "question": "Describe a time when you had to adapt to significant changes at work.",
+      "hint": "Demonstrate flexibility and a positive attitude. Explain your thought process during the transition."
+    },
+    {
+      "id": 6,
+      "category": "Technical",
+      "question": "Explain the difference between REST and GraphQL.",
+      "hint": "REST uses multiple endpoints with standard HTTP methods. GraphQL uses a single endpoint with flexible queries. Discuss pros/cons of each."
+    },
+    {
+      "id": 7,
+      "category": "Technical",
+      "question": "What is the difference between SQL and NoSQL databases?",
+      "hint": "SQL: structured, relational, ACID compliance. NoSQL: flexible schema, horizontal scaling, various types (document, key-value, etc.)."
+    },
+    {
+      "id": 8,
+      "category": "Technical",
+      "question": "Explain what CI/CD means and why it's important.",
+      "hint": "Continuous Integration/Continuous Deployment. Automates testing and deployment, catches bugs early, enables faster releases."
+    },
+    {
+      "id": 9,
+      "category": "Technical",
+      "question": "What is the difference between authentication and authorization?",
+      "hint": "Authentication: verifying who you are (login). Authorization: verifying what you can access (permissions)."
+    },
+    {
+      "id": 10,
+      "category": "Technical",
+      "question": "Explain how you would optimize a slow database query.",
+      "hint": "Consider indexing, query optimization, analyzing execution plans, avoiding N+1 queries, caching, and database design."
+    },
+    {
+      "id": 11,
+      "category": "Technical",
+      "question": "What is the difference between HTTP and HTTPS?",
+      "hint": "HTTPS uses SSL/TLS encryption for secure communication. Discuss certificates, encryption, and why security matters."
+    },
+    {
+      "id": 12,
+      "category": "HR",
+      "question": "Why do you want to work for our company?",
+      "hint": "Research the company's mission, values, and recent achievements. Connect their goals to your career aspirations."
+    },
+    {
+      "id": 13,
+      "category": "HR",
+      "question": "Where do you see yourself in 5 years?",
+      "hint": "Show ambition but be realistic. Align your goals with potential growth paths at the company."
+    },
+    {
+      "id": 14,
+      "category": "HR",
+      "question": "What is your expected salary range?",
+      "hint": "Research market rates for your role and location. Provide a range rather than a specific number. Be prepared to justify it."
+    },
+    {
+      "id": 15,
+      "category": "HR",
+      "question": "Why are you leaving your current job?",
+      "hint": "Stay positive. Focus on seeking growth opportunities, not running from problems. Never badmouth previous employers."
+    },
+    {
+      "id": 16,
+      "category": "HR",
+      "question": "What are your greatest strengths and weaknesses?",
+      "hint": "For strengths: provide examples. For weaknesses: be genuine but show how you're working to improve."
+    },
+    {
+      "id": 17,
+      "category": "HR",
+      "question": "Do you have any questions for us?",
+      "hint": "Always have questions ready! Ask about team culture, growth opportunities, current challenges, or day-to-day responsibilities."
     }
   ]
 }
