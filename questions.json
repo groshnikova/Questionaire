@@ -1,0 +1,18 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "category": "Example",
+      "question": "What is your greatest strength?",
+      "notes": "Think about skills relevant to the position",
+      "answered": false
+    },
+    {
+      "id": 2,
+      "category": "Example",
+      "question": "Describe a challenging project you worked on.",
+      "notes": "Use the STAR method (Situation, Task, Action, Result)",
+      "answered": false
+    }
+  ]
+}
