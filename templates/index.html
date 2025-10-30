@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Questions Practice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interview Questions Practice</h1>
+            <p class="subtitle">Prepare for your next interview</p>
+        </header>
+
+        <div class="stats-panel" id="stats-panel">
+            <div class="stat-item">
+                <span class="stat-number" id="total-questions">0</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="answered-questions">0</span>
+                <span class="stat-label">Answered</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="unanswered-questions">0</span>
+                <span class="stat-label">Remaining</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number" id="progress-percentage">0%</span>
+                <span class="stat-label">Progress</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="category-filter">Category:</label>
+                <select id="category-filter">
+                    <option value="all">All Categories</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>
+                    <input type="checkbox" id="unanswered-filter">
+                    Show only unanswered
+                </label>
+            </div>
+            <button id="reset-btn" class="btn btn-secondary">Reset Progress</button>
+        </div>
+
+        <div id="questions-container">
+            <!-- Questions will be loaded here -->
+        </div>
+
+        <div id="practice-mode" class="practice-mode hidden">
+            <div class="practice-header">
+                <button id="exit-practice-btn" class="btn btn-secondary">Exit Practice</button>
+                <span id="practice-counter">Question 1 of 10</span>
+            </div>
+            <div class="practice-card">
+                <div class="practice-category" id="practice-category"></div>
+                <div class="practice-question" id="practice-question"></div>
+                <div class="practice-notes" id="practice-notes"></div>
+                <div class="practice-controls">
+                    <button id="mark-answered-btn" class="btn btn-primary">Mark as Answered</button>
+                    <button id="next-question-btn" class="btn btn-primary">Next Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allQuestions = [];
+        let filteredQuestions = [];
+        let practiceMode = false;
+        let currentPracticeIndex = 0;
+
+        // Load initial data
+        async function init() {
+            await loadCategories();
+            await loadQuestions();
+            await updateStats();
+        }
+
+        // Load categories
+        async function loadCategories() {
+            const response = await fetch('/api/categories');
+            const categories = await response.json();
+
+            const select = document.getElementById('category-filter');
+            select.innerHTML = '<option value="all">All Categories</option>';
+
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                select.appendChild(option);
+            });
+        }
+
+        // Load questions
+        async function loadQuestions() {
+            const category = document.getElementById('category-filter').value;
+            const unansweredOnly = document.getElementById('unanswered-filter').checked;
+
+            let url = '/api/questions?';
+            if (category !== 'all') url += `category=${category}&`;
+            if (unansweredOnly) url += 'unanswered=true';
+
+            const response = await fetch(url);
+            allQuestions = await response.json();
+            filteredQuestions = allQuestions;
+
+            displayQuestions();
+        }
+
+        // Display questions
+        function displayQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            if (filteredQuestions.length === 0) {
+                container.innerHTML = '<div class="no-questions">No questions found. Add some to questions.json!</div>';
+                return;
+            }
+
+            filteredQuestions.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                if (q.answered) card.classList.add('answered');
+
+                card.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-category">${q.category || 'Uncategorized'}</span>
+                        <button class="toggle-btn ${q.answered ? 'answered' : ''}" onclick="toggleAnswered(${q.id})">
+                            ${q.answered ? '✓ Answered' : '○ Not Answered'}
+                        </button>
+                    </div>
+                    <div class="question-text">${q.question}</div>
+                    ${q.notes ? `<div class="question-notes"><strong>Notes:</strong> ${q.notes}</div>` : ''}
+                `;
+
+                container.appendChild(card);
+            });
+
+            // Add practice button
+            const practiceBtn = document.createElement('button');
+            practiceBtn.className = 'btn btn-primary practice-all-btn';
+            practiceBtn.textContent = 'Practice These Questions';
+            practiceBtn.onclick = startPractice;
+            container.appendChild(practiceBtn);
+        }
+
+        // Toggle answered status
+        async function toggleAnswered(questionId) {
+            const response = await fetch(`/api/questions/${questionId}/toggle`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await loadQuestions();
+                await updateStats();
+            }
+        }
+
+        // Update statistics
+        async function updateStats() {
+            const response = await fetch('/api/stats');
+            const stats = await response.json();
+
+            document.getElementById('total-questions').textContent = stats.total;
+            document.getElementById('answered-questions').textContent = stats.answered;
+            document.getElementById('unanswered-questions').textContent = stats.unanswered;
+            document.getElementById('progress-percentage').textContent = stats.percentage + '%';
+        }
+
+        // Reset progress
+        async function resetProgress() {
+            if (!confirm('Are you sure you want to reset all progress?')) return;
+
+            const response = await fetch('/api/reset', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                await loadQuestions();
+                await updateStats();
+            }
+        }
+
+        // Start practice mode
+        function startPractice() {
+            if (filteredQuestions.length === 0) return;
+
+            practiceMode = true;
+            currentPracticeIndex = 0;
+
+            document.getElementById('questions-container').style.display = 'none';
+            document.getElementById('practice-mode').classList.remove('hidden');
+
+            showPracticeQuestion();
+        }
+
+        // Show current practice question
+        function showPracticeQuestion() {
+            if (currentPracticeIndex >= filteredQuestions.length) {
+                exitPractice();
+                alert('Practice session complete!');
+                return;
+            }
+
+            const q = filteredQuestions[currentPracticeIndex];
+
+            document.getElementById('practice-counter').textContent =
+                `Question ${currentPracticeIndex + 1} of ${filteredQuestions.length}`;
+            document.getElementById('practice-category').textContent = q.category || 'Uncategorized';
+            document.getElementById('practice-question').textContent = q.question;
+            document.getElementById('practice-notes').textContent = q.notes ? `Notes: ${q.notes}` : '';
+
+            const markBtn = document.getElementById('mark-answered-btn');
+            markBtn.textContent = q.answered ? '✓ Answered' : 'Mark as Answered';
+            markBtn.className = q.answered ? 'btn btn-success' : 'btn btn-primary';
+        }
+
+        // Mark current question as answered
+        async function markCurrentAnswered() {
+            const q = filteredQuestions[currentPracticeIndex];
+            await toggleAnswered(q.id);
+
+            // Update the current question in memory
+            filteredQuestions[currentPracticeIndex].answered = !filteredQuestions[currentPracticeIndex].answered;
+            showPracticeQuestion();
+        }
+
+        // Next question in practice
+        function nextPracticeQuestion() {
+            currentPracticeIndex++;
+            showPracticeQuestion();
+        }
+
+        // Exit practice mode
+        function exitPractice() {
+            practiceMode = false;
+            document.getElementById('practice-mode').classList.add('hidden');
+            document.getElementById('questions-container').style.display = 'block';
+            loadQuestions();
+            updateStats();
+        }
+
+        // Event listeners
+        document.getElementById('category-filter').addEventListener('change', loadQuestions);
+        document.getElementById('unanswered-filter').addEventListener('change', loadQuestions);
+        document.getElementById('reset-btn').addEventListener('click', resetProgress);
+        document.getElementById('exit-practice-btn').addEventListener('click', exitPractice);
+        document.getElementById('mark-answered-btn').addEventListener('click', markCurrentAnswered);
+        document.getElementById('next-question-btn').addEventListener('click', nextPracticeQuestion);
+
+        // Initialize on page load
+        init();
+    </script>
+</body>
+</html>

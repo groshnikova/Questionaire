@@ -1,13 +1,16 @@
 # Interview Questions Practice App
 
-A simple, interactive CLI application to help you practice interview questions. Track your progress, organize questions by category, and prepare for your next interview.
+An interactive application to help you practice interview questions. Available as both a modern web interface and a CLI tool. Track your progress, organize questions by category, and prepare for your next interview.
 
 ## Features
 
 - Practice interview questions interactively
+- Modern web interface with beautiful UI
 - Organize questions by categories
 - Track which questions you've answered
 - View statistics on your progress
+- Filter by category or unanswered questions
+- Practice mode for focused study sessions
 - Easy-to-edit JSON format for adding questions
 
 ## Installation
@@ -24,14 +27,34 @@ git clone <your-repo-url>
 cd Questionaire
 ```
 
-2. Make the app executable (optional):
+2. Install dependencies:
 ```bash
-chmod +x interview_app.py
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-### Running the App
+### Web Application (Recommended)
+
+1. Start the web server:
+```bash
+python3 app.py
+```
+
+2. Open your browser and go to:
+```
+http://localhost:5000
+```
+
+The web interface provides:
+- Beautiful, responsive design
+- Real-time statistics dashboard
+- Filter questions by category
+- Show only unanswered questions
+- Practice mode with question navigation
+- One-click progress tracking
+
+### CLI Application
 
 ```bash
 python3 interview_app.py
@@ -39,6 +62,7 @@ python3 interview_app.py
 
 Or if you made it executable:
 ```bash
+chmod +x interview_app.py
 ./interview_app.py
 ```
 
@@ -123,8 +147,14 @@ Edit the `questions.json` file to add your interview questions. Each question sh
 
 ```
 Questionaire/
-├── interview_app.py    # Main application
+├── app.py              # Web application (Flask)
+├── interview_app.py    # CLI application
 ├── questions.json      # Your interview questions
+├── requirements.txt    # Python dependencies
+├── templates/
+│   └── index.html     # Web interface template
+├── static/
+│   └── style.css      # Web interface styling
 └── README.md          # This file
 ```
 
