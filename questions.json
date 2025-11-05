@@ -101,6 +101,30 @@
       "category": "HR",
       "question": "Do you have any questions for us?",
       "hint": "Always have questions ready! Ask about team culture, growth opportunities, current challenges, or day-to-day responsibilities."
+    },
+    {
+      "id": 18,
+      "category": "Behavioral",
+      "question": "Tell me about yourself",
+      "hint": "*please make pauses and sound like a real person, don\u2019t rush\n\nI\u2019ve been working in QA for the past __ months/years, \nmaking sure that everything works, looks and feels good\nmainly focusing on functional and UI testing,\ntesting both Web and Mobile applications, \nMaking sure that requirements are implemented and reporting issues in Jira.\nworking with iOS, Android, Windows, and Mac.\nI have a lot of experience with creating and maintaining QA documentation, \nusing Testrail to create and execute test cases.\nWorking with tools like Chrome Dev Tools, Xcode, Android Studio, ADB and Unix.\nworked closely with Development and Product Management\n....Well that\u2019s pretty much it\u2026 \nPlease feel free to ask if you have any particular questions."
+    },
+    {
+      "id": 19,
+      "category": "Behavioral",
+      "question": "What are your strengths? Why we should hire you?",
+      "hint": "I\u2019m detail-oreinted and i pay a lot of attention to details, that\u2019s why i catch a lot of bugs\nI have a lot of experience testing web and mobile application (depends on what they need)\nI\u2019m always being the voice of the costumer, advocating the costumer to provide the best possible user experience\nI love to break things. I have a passion for quality, which will improve the user experience"
+    },
+    {
+      "id": 20,
+      "category": "Behavioral",
+      "question": "What would you do if a developer reassigns a ticket/bug back to you and marks it as \u201cas-designed\u201d / \u201cnot a bug\u201d?",
+      "hint": "I will double-check the requirements, if according to the requirements it\u2019s expected behavior - \nI will close the bug and leave a comment, \n\nBUT if it\u2019s not expected according to requirements -  I will reopen the bug, assign it back to the developer and leave a comment,\n\nIf the requirements are not clear or maybe missing, I will ask the product manager for clarifications. \n\nAnd will close or reopen the ticket based on his/her answer. \n-----------------------------------------------------------------------------------------------------------------\n*Always leave a comment"
+    },
+    {
+      "id": 21,
+      "category": "Behavioral",
+      "question": "If you need to complete 80 test cases in 5 days, but after the first day you completed 8 test cases, what will you do?",
+      "hint": "I will continue executing test cases, also I will raise a concern to the QA Manager that we might need more time or effort/resources/people to finish this testing on time - if I see that the test cases are complicated or time-consuming."
     }
   ]
 }
