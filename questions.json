@@ -125,6 +125,60 @@
       "category": "Behavioral",
       "question": "If you need to complete 80 test cases in 5 days, but after the first day you completed 8 test cases, what will you do?",
       "hint": "I will continue executing test cases, also I will raise a concern to the QA Manager that we might need more time or effort/resources/people to finish this testing on time - if I see that the test cases are complicated or time-consuming."
+    },
+    {
+      "id": 22,
+      "category": "Technical",
+      "question": "How do you measure the success and ROI of your automation efforts?",
+      "hint": "I measure the success and ROI of automation efforts using metrics like test\ncoverage, defect detection rate, test execution time, and cost savings. I track the\nnumber of automated tests, the percentage of test cases automated, and the\nreduction in manual testing effort. I also analyze the impact of automation on\nthe overall quality of the application and the time-to-market. I present these\nmetrics to stakeholders and use them to justify the investment in automation\nand identify areas for improvement."
+    },
+    {
+      "id": 23,
+      "category": "Technical",
+      "question": "How do you conduct functional testing of APIs?",
+      "hint": "Functional testing tests if the API performs its intended operations accurately and\nconsistently. It includes the following tests:\u2022 Endpoint Validation: Validate if the API endpoints respond to requests as expected.\nExample: Testing if the GET /user/{id} endpoint retrieves the correct user details for\na given ID.\nInput Validation: Test how the API handles various input scenarios:\no Valid inputs.\no Invalid inputs (e.g., incorrect data types or missing required fields).\no Boundary values (e.g., maximum or minimum allowable input sizes).\nExample: Testing an API that accepts a date range to ensure it rejects malformed dates\nlike 32-13-2025.\nBusiness Logic Testing: Validate that the API implements the defined business rules\ncorrectly and completely. Example: For an e-commerce API, ensure the POST\n/applyCoupon endpoint allows discounts only on eligible products.\nDependency Validation: Test how APIs interact with other services. Example: If an API\ntriggers a payment gateway, test if the API handles responses like success, failure, and\ntimeout correctly.\nTip: Use tools like Postman to design and execute functional test cases effectively.\nAutomate repetitive tests with libraries like REST Assured for scalability."
+    },
+    {
+      "id": 24,
+      "category": "Technical",
+      "question": "Can you explain smoke and sanity testing?",
+      "hint": "Smoke Testing: Basic test to check app stability before deeper testing\nSanity Testing: Quick test to verify specific bug fixes or functionality after changes\nScenario:\nAfter a new build is deployed:\n- Smoke Test: Can we log in? Navigate? Load dashboard?\n- Sanity Test: Was the cart issue fixed? Check only that feature."
+    },
+    {
+      "id": 25,
+      "category": "Technical",
+      "question": "How do you test CI/CD pipeline for automation tests? What steps do you take to validate that your pipeline is properly executing tests, catching failures, and reporting results?",
+      "hint": "Answer:\n\u2022 Verify Jenkins job triggers on code push.\n\u2022 Smoke tests run first, regression later.\n\u2022 Report published (Allure/Extent).\n\u2022 Slack/email notifications configured.\n\ud83d\udc49 Example:\nBug: Jenkins marked build \u201cgreen\u201d even when 10% tests failed due to incorrect exit code handling.\n\nStrong answers should include:\n\nValidation of pipeline configuration (syntax, structure)\nTesting in a non-production environment first\nVerifying test execution (all tests run, none skipped)\nChecking failure detection (intentionally failing tests)\nValidating reporting and notifications\nMonitoring pipeline performance/timing\nEnvironment variable and secrets validation"
+    },
+    {
+      "id": 26,
+      "category": "Technical",
+      "question": "How do you test if Acceptance Criteria (AC) is unclear in a story?",
+      "hint": "Answer:\n\u2022 Ask clarifying questions in grooming/refinement.\n\u2022 Use 3 Amigos approach (Dev, QA, PO).\n\u2022 Document assumptions if PO not available.\n\ud83d\udc49 Example:\nAC said: \u201cUser should see discounts.\u201d I asked \u2192 Flat discount or percentage? Applied before or after tax? \u2192\nFound missing business rules."
+    },
+    {
+      "id": 27,
+      "category": "Technical",
+      "question": "Write a function that takes a string as input and returns the character that appears most frequently in that string, along with how many times it appears.",
+      "hint": "function mostFrequentChar(str) {\n  // Edge case: empty string\n  if (!str || str.length === 0) {\n    return null;\n  }\n  \n  // Count frequency of each character\n  const charCount = {};\n  \n  for (let char of str) {\n    charCount[char] = (charCount[char] || 0) + 1;\n  }\n  \n  // Find the character with max count\n  let maxChar = '';\n  let maxCount = 0;\n  \n  for (let char in charCount) {\n    if (charCount[char] > maxCount) {\n      maxCount = charCount[char];\n      maxChar = char;\n    }\n  }\n  \n  return { character: maxChar, count: maxCount };\n}"
+    },
+    {
+      "id": 28,
+      "category": "Behavioral",
+      "question": "What test design techniques do you know and use?",
+      "hint": ""
+    },
+    {
+      "id": 29,
+      "category": "Behavioral",
+      "question": "When do you add new test cases to the regression suite ?",
+      "hint": ""
+    },
+    {
+      "id": 30,
+      "category": "Technical",
+      "question": "Can we store images or pdfs in a database ?",
+      "hint": ""
     }
   ]
 }
